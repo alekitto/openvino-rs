@@ -188,6 +188,11 @@ fn build_from_source_using_cmake() -> (Option<PathBuf>, Vec<PathBuf>) {
             // includes redundant moves. These were previously warnings but newer compilers treat
             // them as errors.
             .cxxflag("-Wno-error=redundant-move")
+            .cxxflag("-Wno-error=pessimizing-move")
+            .cxxflag("-Wno-error=deprecated-copy")
+            // GNA Plugin for Inference Engine contains deprecated functions usage.
+            // Disable error conversion for this kind of warnings.
+            .cxxflag("-Wno-error=deprecated-declarations")
             // Because OpenVINO by default wants to build its binaries in its own tree, we must
             // specify that we actually want them in Cargo's output directory.
             .define("OUTPUT_ROOT", out_dir);
