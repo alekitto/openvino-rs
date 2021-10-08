@@ -3,7 +3,7 @@
 //!  - [ExecutableNetwork] is the compiled representation of a [CNNNetwork] for a device.
 
 use crate::request::InferRequest;
-use crate::{cstr, drop_using_function, try_unsafe, util::Result};
+use crate::{cstr, drop_using_function, impl_send, try_unsafe, util::Result};
 use crate::{Layout, Precision, ResizeAlgorithm};
 use openvino_sys::{
     ie_exec_network_create_infer_request, ie_exec_network_free, ie_executable_network_t,
@@ -19,6 +19,7 @@ pub struct CNNNetwork {
     pub(crate) instance: *mut ie_network_t,
 }
 drop_using_function!(CNNNetwork, ie_network_free);
+impl_send!(CNNNetwork);
 
 impl CNNNetwork {
     /// Retrieve the name identifying the input tensor at `index`.
@@ -100,6 +101,7 @@ pub struct ExecutableNetwork {
     pub(crate) instance: *mut ie_executable_network_t,
 }
 drop_using_function!(ExecutableNetwork, ie_exec_network_free);
+impl_send!(ExecutableNetwork);
 
 impl ExecutableNetwork {
     /// Create an [InferRequest].

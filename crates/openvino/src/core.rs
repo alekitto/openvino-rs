@@ -3,7 +3,7 @@
 
 use crate::blob::Blob;
 use crate::tensor_desc::TensorDesc;
-use crate::{cstr, drop_using_function, try_unsafe, util::Result};
+use crate::{cstr, drop_using_function, impl_send, try_unsafe, util::Result};
 use crate::{
     error::{LoadingError, SetupError},
     network::{CNNNetwork, ExecutableNetwork},
@@ -19,6 +19,7 @@ pub struct Core {
     instance: *mut ie_core_t,
 }
 drop_using_function!(Core, ie_core_free);
+impl_send!(Core);
 
 impl Core {
     /// Construct a new OpenVINO [Core]--this is the primary entrypoint for constructing and using

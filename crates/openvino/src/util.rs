@@ -35,3 +35,11 @@ macro_rules! drop_using_function {
         }
     };
 }
+
+/// Implement Send for given struct
+#[macro_export]
+macro_rules! impl_send {
+    ($ty: ty) => {
+        unsafe impl Send for $ty {}
+    };
+}

@@ -1,5 +1,5 @@
 use crate::blob::Blob;
-use crate::{cstr, drop_using_function, try_unsafe, util::Result};
+use crate::{cstr, drop_using_function, impl_send, try_unsafe, util::Result};
 use openvino_sys::{
     ie_infer_request_free, ie_infer_request_get_blob, ie_infer_request_infer,
     ie_infer_request_set_batch, ie_infer_request_set_blob, ie_infer_request_t,
@@ -10,6 +10,7 @@ pub struct InferRequest {
     pub(crate) instance: *mut ie_infer_request_t,
 }
 drop_using_function!(InferRequest, ie_infer_request_free);
+impl_send!(InferRequest);
 
 impl InferRequest {
     /// Set the batch size of the inference requests.
