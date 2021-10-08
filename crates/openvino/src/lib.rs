@@ -30,6 +30,7 @@ pub use network::{CNNNetwork, ExecutableNetwork};
 // `crates/openvino-sys/build.rs`).
 pub use openvino_sys::{
     layout_e as Layout, precision_e as Precision, resize_alg_e as ResizeAlgorithm,
+    colorformat_e as ColorFormat,
 };
 pub use request::InferRequest;
 pub use tensor_desc::TensorDesc;
