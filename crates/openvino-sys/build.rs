@@ -90,16 +90,6 @@ enum Linking {
     Dynamic,
 }
 
-/// Canonicalize a path as well as verify that it exists.
-fn dir<P: AsRef<Path>>(path: P) -> PathBuf {
-    let path = path.as_ref();
-    if !path.exists() || !path.is_dir() {
-        panic!("Unable to find directory: {}", path.display())
-    }
-    path.canonicalize()
-        .expect("to be able to canonicalize the path")
-}
-
 /// Helper for recursively visiting the files in this directory; see https://doc.rust-lang.org/std/fs/fn.read_dir.html.
 fn visit_dirs(dir: &Path, cb: &dyn Fn(PathBuf)) -> std::io::Result<()> {
     if dir.is_dir() {
@@ -200,12 +190,15 @@ fn build_from_source_using_cmake() -> (Option<PathBuf>, Vec<PathBuf>) {
             .define("OUTPUT_ROOT", out_dir);
 
         if target.contains("aarch64") {
-            config.define(
-                "IE_EXTRA_MODULES",
-                env::current_dir()
-                    .unwrap()
-                    .join("upstream_contrib/modules/arm_plugin"),
-            );
+            config
+                .cxxflag("-pthread")
+                .define("THREADING", "SEQ")
+                .define(
+                    "IE_EXTRA_MODULES",
+                    env::current_dir()
+                        .unwrap()
+                        .join("upstream_contrib/modules/arm_plugin"),
+                );
         }
 
         config
