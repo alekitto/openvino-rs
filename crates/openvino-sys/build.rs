@@ -233,23 +233,6 @@ fn build_from_source_using_cmake() -> (Option<PathBuf>, Vec<PathBuf>) {
     };
 
     let openvino_libraries = find_and_append_cmake_build_type(bin_path).join("lib");
-
-    // Copy the TBB libraries into the OpenVINO library directory. Since ngraph already exists
-    // here and because the TBB directory is weirdly downloaded in-tree rather than under target
-    // (meaning that the TBB path would be stripped from LD_LIBRARY_PATH, see
-    // https://doc.rust-lang.org/cargo/reference/environment-variables.html#dynamic-library-paths),
-    // copying the files over makes some sense. Also, I have noticed compatibility issues with
-    // pre-installed libtbb (on some systems, the nodes_count symbol is not present in the
-    // system-provided libtbb) so it may be important to include OpenVINO's version of libtbb
-    // here.
-    let tbb_libraries = dir("upstream/inference-engine/temp/tbb/lib");
-    visit_dirs(&tbb_libraries, &|from: PathBuf| {
-        let to = openvino_libraries.join(from.file_name().unwrap());
-        println!("Copying {} to {}", from.display(), to.display());
-        std::fs::copy(from, to).expect("failed copying TBB libraries");
-    })
-    .expect("failed visiting TBB directory");
-
     let c_api = format!(
         "{}inference_engine_c_api{}",
         env::consts::DLL_PREFIX,
