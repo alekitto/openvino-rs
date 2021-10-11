@@ -23,8 +23,11 @@ jobs:
 
   # Build and test from the git-submodule-included OpenVINO source code. 
   source:
+    strategy:
+      matrix:
+        runner: [ubuntu-20.04, [self-hosted, ARM64]]
     name: From source
-    runs-on: ubuntu-20.04
+    runs-on: ${{ matrix.runner }}
     steps:
     - uses: actions/checkout@v2
       with:
