@@ -200,7 +200,12 @@ fn build_from_source_using_cmake() -> (Option<PathBuf>, Vec<PathBuf>) {
             .define("OUTPUT_ROOT", out_dir);
 
         if target.contains("aarch64") {
-            config.define("IE_EXTRA_MODULES", env::current_dir().unwrap().join("upstream_contrib/modules/arm_plugin"));
+            config.define(
+                "IE_EXTRA_MODULES",
+                env::current_dir()
+                    .unwrap()
+                    .join("upstream_contrib/modules/arm_plugin"),
+            );
         }
 
         config
