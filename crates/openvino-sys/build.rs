@@ -209,8 +209,21 @@ fn build_from_source_using_cmake() -> (Option<PathBuf>, Vec<PathBuf>) {
     // Unfortunately, `inference_engine_c_api` will not build the OpenVINO plugins used for
     // the actual computation. Here we re-run CMake for each plugin the user specifies using
     // Cargo features (see `Cargo.toml`).
-    for plugin in get_plugin_target_from_features() {
+    for plugin in get_plugin_target_from_features(&target) {
         cmake(out.to_str().unwrap()).build_target(plugin).build();
+    }
+
+    if target == "aarch64" {
+        let mut config = cmake::Config::new("upstream_contrib/modules/arm_plugin");
+        config
+            .very_verbose(true)
+            .define("-DInferenceEngineDeveloperPackage_DIR", out.to_str().unwrap())
+            .cxxflag("-Wno-error=redundant-move")
+            .cxxflag("-Wno-error=pessimizing-move")
+            .cxxflag("-Wno-error=deprecated-copy")
+            .cxxflag("-Wno-error=deprecated-declarations")
+            .define("OUTPUT_ROOT", out.to_str().unwrap())
+            .build();
     }
 
     // Collect the locations of the libraries. Note that ngraph should also be found with the
@@ -253,12 +266,12 @@ fn build_from_source_using_cmake() -> (Option<PathBuf>, Vec<PathBuf>) {
 /// Determine CMake targets for the various OpenVINO plugins. The plugin mapping is available in
 /// OpenVINO's `plugins.xml` file and, usign that, this function wires up the exposed Cargo
 /// features of openvino-sys to the correct CMake target.
-fn get_plugin_target_from_features() -> Vec<&'static str> {
+fn get_plugin_target_from_features(target: &str) -> Vec<&'static str> {
     let mut plugins = vec![];
     if cfg!(feature = "all") {
         plugins.push("ie_plugins")
     } else {
-        if cfg!(feature = "cpu") {
+        if target != "aarch64" && cfg!(feature = "cpu") {
             plugins.push("MKLDNNPlugin")
         }
         if cfg!(feature = "gpu") {

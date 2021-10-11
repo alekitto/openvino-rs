@@ -2,3 +2,7 @@
 	path = crates/openvino-sys/upstream
 	url = https://github.com/openvinotoolkit/openvino
 	depth = 1
+[submodule "crates/upstream_contrib"]
+	path = crates/openvino-sys/upstream_contrib
+	url = https://github.com/openvinotoolkit/openvino_contrib.git
+	branch = releases/2021/4.1
