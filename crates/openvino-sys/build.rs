@@ -213,11 +213,14 @@ fn build_from_source_using_cmake() -> (Option<PathBuf>, Vec<PathBuf>) {
         cmake(out.to_str().unwrap()).build_target(plugin).build();
     }
 
-    if target == "aarch64" {
+    if target.contains("aarch64") {
         let mut config = cmake::Config::new("upstream_contrib/modules/arm_plugin");
         config
             .very_verbose(true)
-            .define("-DInferenceEngineDeveloperPackage_DIR", out.to_str().unwrap())
+            .define(
+                "-DInferenceEngineDeveloperPackage_DIR",
+                out.to_str().unwrap(),
+            )
             .cxxflag("-Wno-error=redundant-move")
             .cxxflag("-Wno-error=pessimizing-move")
             .cxxflag("-Wno-error=deprecated-copy")
@@ -271,7 +274,7 @@ fn get_plugin_target_from_features(target: &str) -> Vec<&'static str> {
     if cfg!(feature = "all") {
         plugins.push("ie_plugins")
     } else {
-        if target != "aarch64" && cfg!(feature = "cpu") {
+        if !target.contains("aarch64") && cfg!(feature = "cpu") {
             plugins.push("MKLDNNPlugin")
         }
         if cfg!(feature = "gpu") {
@@ -290,7 +293,7 @@ fn get_plugin_target_from_features(target: &str) -> Vec<&'static str> {
             plugins.push("myriadPlugin")
         }
     }
-    assert!(!plugins.is_empty());
+
     plugins
 }
 
