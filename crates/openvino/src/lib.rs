@@ -29,8 +29,8 @@ pub use network::{CNNNetwork, ExecutableNetwork};
 // Re-publish some OpenVINO enums with a conventional Rust naming (see
 // `crates/openvino-sys/build.rs`).
 pub use openvino_sys::{
-    layout_e as Layout, precision_e as Precision, resize_alg_e as ResizeAlgorithm,
-    colorformat_e as ColorFormat,
+    colorformat_e as ColorFormat, layout_e as Layout, precision_e as Precision,
+    resize_alg_e as ResizeAlgorithm,
 };
 pub use request::InferRequest;
 pub use tensor_desc::TensorDesc;

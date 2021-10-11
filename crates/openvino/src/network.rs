@@ -8,7 +8,7 @@ use crate::{ColorFormat, Layout, Precision, ResizeAlgorithm};
 use openvino_sys::{
     ie_exec_network_create_infer_request, ie_exec_network_free, ie_executable_network_t,
     ie_network_free, ie_network_get_input_name, ie_network_get_output_name, ie_network_name_free,
-    ie_network_set_input_layout, ie_network_set_input_precision, ie_network_set_color_format,
+    ie_network_set_color_format, ie_network_set_input_layout, ie_network_set_input_precision,
     ie_network_set_input_resize_algorithm, ie_network_set_output_precision, ie_network_t,
 };
 use std::ffi::CStr;
