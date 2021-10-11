@@ -175,6 +175,7 @@ fn find_libraries_in_existing_installation() -> Vec<PathBuf> {
 /// because the `upstream` directory will not fit inside the 10MB crate limit. To solve this, we
 /// could retrieve the sources (cringe), e.g., with `git2`.
 fn build_from_source_using_cmake() -> (Option<PathBuf>, Vec<PathBuf>) {
+    let target = env::var("TARGET").unwrap();
     let out = PathBuf::from(env::var("OUT_DIR").unwrap());
 
     fn cmake(out_dir: &str) -> cmake::Config {
@@ -214,8 +215,13 @@ fn build_from_source_using_cmake() -> (Option<PathBuf>, Vec<PathBuf>) {
 
     // Collect the locations of the libraries. Note that ngraph should also be found with the
     // built OpenVINO libraries.
-    let openvino_libraries =
-        find_and_append_cmake_build_type(build_path.join("bin/intel64")).join("lib");
+    let bin_path = if target.contains("aarch64") {
+        build_path.join("bin/aarch64")
+    } else {
+        build_path.join("bin/intel64")
+    };
+
+    let openvino_libraries = find_and_append_cmake_build_type(bin_path).join("lib");
 
     // Copy the TBB libraries into the OpenVINO library directory. Since ngraph already exists
     // here and because the TBB directory is weirdly downloaded in-tree rather than under target

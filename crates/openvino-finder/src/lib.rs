@@ -122,7 +122,9 @@ const KNOWN_INSTALLATION_SUBDIRECTORIES: &'static [&'static str] = &[
 ];
 
 const KNOWN_BUILD_SUBDIRECTORIES: &'static [&'static str] = &[
+    "bin/aarch64/Debug/lib",
     "bin/intel64/Debug/lib",
+    "bin/aarch64/Release/lib",
     "bin/intel64/Release/lib",
     "inference-engine/temp/tbb/lib",
 ];
