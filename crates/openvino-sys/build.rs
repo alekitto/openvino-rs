@@ -179,6 +179,7 @@ fn build_from_source_using_cmake() -> (Option<PathBuf>, Vec<PathBuf>) {
     let out = PathBuf::from(env::var("OUT_DIR").unwrap());
 
     fn cmake(out_dir: &str) -> cmake::Config {
+        let target = env::var("TARGET").unwrap();
         let mut config = cmake::Config::new("upstream");
         config
             .very_verbose(true)
@@ -197,6 +198,11 @@ fn build_from_source_using_cmake() -> (Option<PathBuf>, Vec<PathBuf>) {
             // Because OpenVINO by default wants to build its binaries in its own tree, we must
             // specify that we actually want them in Cargo's output directory.
             .define("OUTPUT_ROOT", out_dir);
+
+        if target.contains("aarch64") {
+            config.define("IE_EXTRA_MODULES", env::current_dir().unwrap().join("upstream_contrib/modules/arm_plugin"));
+        }
+
         config
     }
 
@@ -211,22 +217,6 @@ fn build_from_source_using_cmake() -> (Option<PathBuf>, Vec<PathBuf>) {
     // Cargo features (see `Cargo.toml`).
     for plugin in get_plugin_target_from_features(&target) {
         cmake(out.to_str().unwrap()).build_target(plugin).build();
-    }
-
-    if target.contains("aarch64") {
-        let mut config = cmake::Config::new("upstream_contrib/modules/arm_plugin");
-        config
-            .very_verbose(true)
-            .define(
-                "-DInferenceEngineDeveloperPackage_DIR",
-                out.to_str().unwrap(),
-            )
-            .cxxflag("-Wno-error=redundant-move")
-            .cxxflag("-Wno-error=pessimizing-move")
-            .cxxflag("-Wno-error=deprecated-copy")
-            .cxxflag("-Wno-error=deprecated-declarations")
-            .define("OUTPUT_ROOT", out.to_str().unwrap())
-            .build();
     }
 
     // Collect the locations of the libraries. Note that ngraph should also be found with the
@@ -274,8 +264,13 @@ fn get_plugin_target_from_features(target: &str) -> Vec<&'static str> {
     if cfg!(feature = "all") {
         plugins.push("ie_plugins")
     } else {
-        if !target.contains("aarch64") && cfg!(feature = "cpu") {
-            plugins.push("MKLDNNPlugin")
+        if cfg!(feature = "cpu") {
+            if target.contains("x86_64") || target.contains("i686") {
+                plugins.push("MKLDNNPlugin")
+            }
+            if target.contains("aarch64") {
+                plugins.push("armPlugin")
+            }
         }
         if cfg!(feature = "gpu") {
             plugins.push("clDNNPlugin")
@@ -293,6 +288,8 @@ fn get_plugin_target_from_features(target: &str) -> Vec<&'static str> {
             plugins.push("myriadPlugin")
         }
     }
+
+    assert!(!plugins.is_empty());
 
     plugins
 }

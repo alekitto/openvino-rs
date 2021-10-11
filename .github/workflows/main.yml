@@ -36,7 +36,7 @@ jobs:
     - name: Checkout LFS obects
       run: git lfs checkout
     - name: Install system dependencies
-      run: sudo apt update && sudo apt install -y clang cmake libclang-dev gnupg2 libdrm2 libglib2.0-0 libusb-1.0-0-dev lsb-release libgtk-3-0 libtool udev unzip dos2unix
+      run: sudo apt update && sudo apt install -y clang cmake libclang-dev gnupg2 libdrm2 libglib2.0-0 libusb-1.0-0-dev lsb-release libgtk-3-0 libtool udev unzip scons dos2unix
     - name: Build (openvino-sys from source)
       run: cargo build --verbose --features openvino-sys/from-source
     - name: Run tests
