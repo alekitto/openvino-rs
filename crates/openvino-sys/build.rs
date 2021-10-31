@@ -180,6 +180,7 @@ fn build_from_source_using_cmake() -> (Option<PathBuf>, Vec<PathBuf>) {
             // includes redundant moves. These were previously warnings but newer compilers treat
             // them as errors.
             .cxxflag("-Wno-error=redundant-move")
+            .cxxflag("-Wno-error=array-bounds")
             .cxxflag("-Wno-error=pessimizing-move")
             .cxxflag("-Wno-error=deprecated-copy")
             // GNA Plugin for Inference Engine contains deprecated functions usage.
